@@ -122,7 +122,6 @@ class ArrayEditor {
    *   Current array value.
    */
   public function after($value, $key = NULL) {
-    $this->key++;
     $this->placement = 'after';
     return $this->insert($value, $key);
   }
@@ -158,8 +157,12 @@ class ArrayEditor {
   protected function insert($value, $key) {
     if (isset($this->array[$this->key])) {
       $newArray = !is_null($key) ? array($key => $value) : array($value);
-      $slice1 = array_slice($this->array, 0, $this->key, TRUE);
-      $slice2 = array_slice($this->array, $this->key, count($this->array) - 1, TRUE);
+      $index = is_string($this->key) ? array_search($this->key, array_keys($this->array)) : $this->key;
+      if ($this->placement == 'after') {
+        $index++;
+      }
+      $slice1 = array_slice($this->array, 0, $index, TRUE);
+      $slice2 = array_slice($this->array, $index, count($this->array) - 1, TRUE);
       $this->array = array_merge($slice1, $newArray, $slice2);
     }
     $this->debug($value, $key);
